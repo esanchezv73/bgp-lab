@@ -1,0 +1,45 @@
+name: topo-bgp
+mgmt:
+  network: topo-bgp
+  ipv4-subnet: 172.100.100.0/24
+
+topology:
+  nodes:
+    rt-prov:
+      kind: nokia_srlinux
+      #mgmt-ipv4: 172.80.80.5
+      image: ghcr.io/nokia/srlinux:24.10.1
+      type: ixr-d3
+      #startup-config: configs/rt-ufinet.cfg 
+    
+    rt-ixa:
+      kind: nokia_srlinux
+      #mgmt-ipv4: 172.80.80.5
+      image: ghcr.io/nokia/srlinux:24.10.1
+      type: ixr-d3
+      startup-config: configs/rt-ixa.cfg 
+
+    rt-ufinet:
+      kind: nokia_srlinux
+      #mgmt-ipv4: 172.80.80.5
+      image: ghcr.io/nokia/srlinux:24.10.1
+      type: ixr-d3
+      startup-config: configs/rt-ufinet.cfg 
+
+    rt-core:
+      kind: huawei_vrp
+      mgmt-ipv4: 172.100.100.7
+      image: vrnetlab/huawei_vrp:ne40e-8.180
+      #startup-config: configs/myconfig.txt
+
+    srvweb:
+       kind: linux
+       image: docker.io/esanchezv/srvhttps:latest  
+      
+  links:
+    - endpoints: ["rt-ixa:e1-2", "rt-prov:e1-1"]
+    - endpoints: ["rt-ufinet:e1-2", "rt-prov:e1-2"]
+    - endpoints: ["rt-prov:e1-3", "srvweb:eth1"]
+    - endpoints: ["rt-ixa:e1-1", "rt-core:eth1"]
+    - endpoints: ["rt-ufinet:e1-1", "rt-core:eth2"] 
+      
